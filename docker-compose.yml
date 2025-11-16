@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  monolith:
+    build: ./monolith-app
+    image: hl-course/monolith-example:part-a
+    container_name: monolith-example
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped

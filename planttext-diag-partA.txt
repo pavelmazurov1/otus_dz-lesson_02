@@ -1,0 +1,36 @@
+https://www.planttext.com/
+
+@startuml
+title Chat Extraction (Monolith -> Chat Service)
+
+skinparam componentStyle rectangle
+skinparam shadowing false
+
+actor Client
+
+package "Docker Compose Network" {
+  [Monolith (Facade)\n:8080] as MONO
+  [Chat-Service\n:8081] as CHAT
+}
+
+database "In-Memory/DB\n(users)" as UDB
+database "In-Memory/DB\n(messages)" as MDB
+
+Client -[#blue]> MONO : HTTP (Legacy API)\nGET/POST /dialog/*
+MONO -[#green]> CHAT : HTTP (internal)\n/x-user-id, x-request-id
+MONO -[#brown]> UDB : Users
+CHAT -[#brown]> MDB : Dialog messages
+
+note right of MONO
+- Валидирует Bearer
+- Прокидывает x-request-id (генерит при отсутствии)
+- Делегирует диалоги в Chat-Service
+end note
+
+note right of CHAT
+- Хранит сообщения
+- Доверяет x-user-id от монолита
+- Возвращает x-request-id
+end note
+
+@enduml

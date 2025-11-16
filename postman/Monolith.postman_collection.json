@@ -1,0 +1,108 @@
+{
+  "info": {
+    "name": "Monolith Part A",
+    "_postman_id": "hl-monolith-part-a",
+    "description": "Minimal monolith API for HW_1_PartA",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/health"
+      }
+    },
+    {
+      "name": "Register Alice",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\": \"Alice\"}"
+        },
+        "url": "{{baseUrl}}/user/register"
+      }
+    },
+    {
+      "name": "Register Bob",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\": \"Bob\"}"
+        },
+        "url": "{{baseUrl}}/user/register"
+      }
+    },
+    {
+      "name": "Alice -> Bob send",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token_alice}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"text\": \"\\u041f\\u0440\\u0438\\u0432\\u0435\\u0442, \\u0411\\u043e\\u0431!\"}"
+        },
+        "url": "{{baseUrl}}/dialog/{{bob_id}}/send"
+      }
+    },
+    {
+      "name": "Bob list dialog with Alice",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token_bob}}"
+          }
+        ],
+        "url": "{{baseUrl}}/dialog/{{alice_id}}/list?limit=50"
+      }
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "alice_id",
+      "value": "1"
+    },
+    {
+      "key": "bob_id",
+      "value": "2"
+    },
+    {
+      "key": "token_alice",
+      "value": "paste-token-here"
+    },
+    {
+      "key": "token_bob",
+      "value": "paste-token-here"
+    }
+  ]
+}
