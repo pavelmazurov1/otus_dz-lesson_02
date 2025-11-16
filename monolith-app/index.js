@@ -1,6 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
 import { v4 as uuidv4 } from 'uuid';
+import proxy from 'express-http-proxy';
 
 const app = express();
 app.use(express.json());
@@ -50,7 +51,7 @@ function authRequired(req, res, next) {
 }
 
 // Health
-app.get('/health', (req, res) => res.json({ status: 'OK', time: nowIso() }));
+app.get('/health', (req, res) => res.json({ status: 'monolith app OK', time: nowIso() }));
 
 // Users
 // Register user (no password for demo). Returns token.
@@ -76,33 +77,22 @@ app.get('/user/get/:id', authOptional, (req, res) => {
 
 // Dialogs (обрати внимание на это! тот самый функционал диалогов)
 // Send a message to user_id
-app.post('/dialog/:user_id/send', authRequired, (req, res) => {
-  const to = Number(req.params.user_id);
-  const { text, reply_to } = req.body || {};
-  if (!text || typeof text !== 'string') {
-    return res.status(400).json({ error: 'text is required' });
+app.post('/dialog/:user_id/send', authRequired, proxy('dialog-service:8080/dialog/:user_id/send', {
+  preserveHostHdr: true,
+  proxyReqOptDecorator: function(proxyReqOpts, srcReq) {
+    proxyReqOpts.headers['x-request-id'] = srcReq.requestId;
+    return proxyReqOpts;
   }
-  const from = req.userId;
-  const id = db.messages.length + 1;
-  const msg = { id, from, to, text, reply_to: reply_to || null, ts: nowIso(), request_id: req.requestId };
-  db.messages.push(msg);
-  res.status(201).json(msg);
-});
+}));
 
 // List messages with user_id (two-sided dialog for current user)
-app.get('/dialog/:user_id/list', authRequired, (req, res) => {
-  const other = Number(req.params.user_id);
-  const me = req.userId;
-  // Filter two-way conversation
-  const list = db.messages.filter(m =>
-    (m.from === me && m.to === other) || (m.from === other && m.to === me)
-  );
-  // Optional pagination
-  const limit = Number(req.query.limit || 50);
-  const offset = Number(req.query.offset || 0);
-  const sliced = list.slice(offset, offset + limit);
-  res.json({ total: list.length, items: sliced });
-});
+app.get('/dialog/:user_id/list', authRequired, proxy('dialog-service:8080/dialog/:user_id/list', {
+  preserveHostHdr: true,
+  proxyReqOptDecorator: function(proxyReqOpts, srcReq) {
+    proxyReqOpts.headers['x-request-id'] = srcReq.requestId;
+    return proxyReqOpts;
+  }
+}));
 
 // Fallback 404
 app.use((req, res) => res.status(404).json({ error: 'not found' }));

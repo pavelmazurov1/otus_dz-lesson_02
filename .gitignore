@@ -1,1 +1,3 @@
 .DS_Store
+monolith-app/node_modules/*
+dialog-service/node_modules/*

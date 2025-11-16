@@ -2,10 +2,17 @@ version: "3.9"
 services:
   monolith:
     build: ./monolith-app
-    image: hl-course/monolith-example:part-a
     container_name: monolith-example
     ports:
       - "8080:8080"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+  dialog-service:
+    build: ./dialog-service
+    container_name: dialog-service
+    ports:
+      - "8081:8080"
     environment:
       - NODE_ENV=production
     restart: unless-stopped

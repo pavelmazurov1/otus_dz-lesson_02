@@ -1,0 +1,23 @@
+curl http://0.0.0.0:8081/health
+{"status":"dialog service OK","time":"2025-11-16T09:35:36.639Z"}
+
+curl http://0.0.0.0:8080/health
+{"status":"monolith app OK","time":"2025-11-16T09:35:41.733Z"}
+
+curl --json '{"name": "A"}' http://0.0.0.0:8080/user/register
+{"user":{"id":1,"name":"A"},"token":"demo-73fb5a21-4639-4d6d-9086-5494976ac3a5"}
+
+curl --json '{"name": "B"}' http://0.0.0.0:8080/user/register
+{"user":{"id":2,"name":"B"},"token":"demo-c274cb48-9d81-48ab-93eb-7eb3eeec1192"}
+
+curl -H "authorization: Bearer demo-73fb5a21-4639-4d6d-9086-5494976ac3a5" http://0.0.0.0:8080/dialog/1/list
+{"total":0,"items":[]}
+
+curl -H "authorization: Bearer demo-73fb5a21-4639-4d6d-9086-5494976ac3a5" --json '{"text": "wazzup!", "reply_to":"A" }' http://0.0.0.0:8080/dialog/2/send
+{"id":1,"to":2,"text":"wazzup!","reply_to":"A","ts":"2025-11-16T09:45:57.229Z","request_id":"1a639c56-8bc2-4760-ac00-ec508b96e6df"}
+
+curl -H "authorization: Bearer demo-73fb5a21-4639-4d6d-9086-5494976ac3a5" http://0.0.0.0:8080/dialog/1/list
+{"total":0,"items":[]}
+
+curl -H "authorization: Bearer demo-c274cb48-9d81-48ab-93eb-7eb3eeec1192" http://0.0.0.0:8080/dialog/2/list
+{"total":1,"items":[{"id":1,"to":2,"text":"wazzup!","reply_to":"A","ts":"2025-11-16T09:45:57.229Z","request_id":"1a639c56-8bc2-4760-ac00-ec508b96e6df"}]}
