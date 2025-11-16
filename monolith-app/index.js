@@ -22,7 +22,6 @@ app.use(morgan(':method :url :status - rid=:rid - :response-time ms'));
 const db = {
   users: [], // {id, name}
   tokens: new Map(), // token -> userId
-  messages: [] // {id, from, to, text, reply_to, ts}
 };
 
 // Helpers

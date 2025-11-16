@@ -1,0 +1,8 @@
+Выделение домена диалога из монолита:
+- создал новый сервис dialog-service - без авторизации, но с in-memory db
+- перенес логику по ручкам /dialog/:user_id/send и /dialog/:user_id/list из монолита в dialog-service
+- в монолите добавил пакет express-http-proxy
+- в монолите по ручкам /dialog/:user_id/send и /dialog/:user_id/list добавил проксирование запросов с копированием "x-request-id"
+- в монолите из in-memory db удалил коллекцию messages
+- обновил docker-compose файл - добавил новый сервис dialog-service с портом 8081
+- добавил сценарий с последовательностью запросов/ответов для проверки работы ручек диалогов
